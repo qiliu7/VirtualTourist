@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class TravelLocationsMapViewController: UIViewController {
+class MapViewController: UIViewController {
   
   var dataController: DataController!
   
@@ -19,13 +19,46 @@ class TravelLocationsMapViewController: UIViewController {
   lazy var mapView: MKMapView = {
     var mv = MKMapView(frame: self.view.frame)
     mv.delegate = self
-    //TODO: zoom to a initial location when opened - e.g. current location?
+    //TODO: zoom to a initial location when opened?
     let longPress = UILongPressGestureRecognizer()
     longPress.addTarget(self, action: #selector(longPressRecognized(_:)))
     mv.addGestureRecognizer(longPress)
     return mv
   }()
-
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    customizeNavBar()
+    view.addSubview(mapView)
+    let persistedPins = loadPersistedPins()
+    //TODO: remove previous annotations?
+    mapView.addAnnotations(persistedPins)
+  }
+  
+  @objc func longPressRecognized(_ gestureRecognizer: UILongPressGestureRecognizer) {
+    if gestureRecognizer.state != .began {
+      return
+    }
+    let location = gestureRecognizer.location(in: mapView)
+    let pinToPlace = MKPointAnnotation()
+    pinToPlace.coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+    mapView.addAnnotation(pinToPlace)
+    
+    //TODO: could be extracted to savePin?
+    let newPin = Pin(context: dataController.viewContext)
+    newPin.lat = pinToPlace.coordinate.latitude
+    newPin.lon = pinToPlace.coordinate.longitude
+    do {
+        _ = try dataController.viewContext.save()
+    } catch {
+      print(error.localizedDescription)
+    }
+  }
+  
+  private func customizeNavBar() {
+    navigationItem.title = ""
+  }
+  
   fileprivate func loadPersistedPins() -> [MKPointAnnotation] {
     let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
     if let result = try? dataController.viewContext.fetch(fetchRequest){
@@ -39,30 +72,9 @@ class TravelLocationsMapViewController: UIViewController {
     }
     return annotations
   }
-  
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    customizeNavBar()
-    view.addSubview(mapView)
-  }
-  
-  private func customizeNavBar() {
-    navigationItem.title = "Drop a Pin"
-  }
-  
-  @objc func longPressRecognized(_ gestureRecognizer: UILongPressGestureRecognizer) {
-    if gestureRecognizer.state != .began {
-      return
-    }
-    let location = gestureRecognizer.location(in: mapView)
-    let newPin = MKPointAnnotation()
-    newPin.coordinate = mapView.convert(location, toCoordinateFrom: mapView)
-    mapView.addAnnotation(newPin)
-    print(mapView.annotations.count)
-  }
 }
 
-extension TravelLocationsMapViewController: MKMapViewDelegate {
+extension MapViewController: MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     let pinIdentifier = "pinIdentifier"

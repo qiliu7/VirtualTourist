@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let _ = (scene as? UIWindowScene) else { return }
     dataController.load()
     let navigationController = window?.rootViewController as! UINavigationController
-    let travelLocationsMapVC = navigationController.topViewController as! TravelLocationsMapViewController
+    let travelLocationsMapVC = navigationController.topViewController as! MapViewController
     travelLocationsMapVC.dataController = dataController
   }
 

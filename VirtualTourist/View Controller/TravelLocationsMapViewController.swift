@@ -10,7 +10,11 @@ import UIKit
 import MapKit
 import CoreData
 
-class TravelLocationsMapView: UIViewController {
+class TravelLocationsMapViewController: UIViewController {
+  
+  var dataController: DataController!
+  
+  var pins = [Pin]()
   
   lazy var mapView: MKMapView = {
     var mv = MKMapView(frame: self.view.frame)

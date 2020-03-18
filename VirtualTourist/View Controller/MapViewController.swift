@@ -12,29 +12,22 @@ import CoreData
 
 class MapViewController: UIViewController {
   
+  // MARK: Properties
   var dataController: DataController!
   var pins = [Pin]()
+  var mapRegion: MKCoordinateRegion = DefaultMapSetting.region
   
-  lazy var mapView: MKMapView = {
-    var mv = MKMapView(frame: self.view.frame)
-    mv.delegate = self
-    let longPress = UILongPressGestureRecognizer()
-    longPress.addTarget(self, action: #selector(handleLongPress(_:)))
-    mv.addGestureRecognizer(longPress)
-    return mv
-  }()
-  
+  // MARK: Outlets
+  @IBOutlet weak var mapView: MKMapView!
+
+  // MARK: Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    customizeNavBar()
-    view.addSubview(mapView)
-    mapView.addAnnotations(fetchStoredPins())
+    configureNavBar()
+    configureMapView()
   }
   
-  private func customizeNavBar() {
-    navigationItem.title = ""
-  }
-  
+  // MARK: Actions
   @objc func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
     if gestureRecognizer.state != .began {
       return
@@ -54,8 +47,22 @@ class MapViewController: UIViewController {
       print(error.localizedDescription)
     }
   }
-
   
+  // MARK: Set UI & MapView
+  private func configureNavBar() {
+    navigationItem.title = ""
+  }
+  
+  private func configureMapView() {
+    mapView.setRegion(mapRegion, animated: true)
+    mapView.delegate = self
+    let longPress = UILongPressGestureRecognizer()
+    longPress.addTarget(self, action: #selector(handleLongPress(_:)))
+    mapView.addGestureRecognizer(longPress)
+    mapView.addAnnotations(fetchStoredPins())
+   }
+  
+  // MARK: Fetch Pin
   private func fetchStoredPins() -> [MKPointAnnotation] {
     let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
     if let result = try? dataController.viewContext.fetch(fetchRequest){
@@ -69,7 +76,7 @@ class MapViewController: UIViewController {
     }
 }
 
-//MARK: Map View Delegate
+// MARK: Map View Delegate
 extension MapViewController: MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {

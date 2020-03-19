@@ -74,6 +74,11 @@ class MapViewController: UIViewController {
       }
       return annotations
     }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    let photoAlbumVC = segue.destination as! PhotoAlbumViewController
+    photoAlbumVC.coordinate = sender as? CLLocationCoordinate2D
+  }
 }
 
 // MARK: Map View Delegate
@@ -90,5 +95,10 @@ extension MapViewController: MKMapViewDelegate {
       pinView?.animatesDrop = true
     }
     return pinView
+  }
+  
+  // MARK: Anti Pattern?
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    performSegue(withIdentifier: Name.showPhotosSegue, sender: view.annotation?.coordinate)
   }
 }

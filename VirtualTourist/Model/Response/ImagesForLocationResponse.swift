@@ -14,15 +14,11 @@ struct ImagesForLoctaionResponse: Codable {
 }
 
 struct PhotosResponse: Codable {
-  let info: PhotosInfo
-  let photoList: [PhotoData]
-}
-
-struct PhotosInfo: Codable {
   let page: Int
   let pages: Int
   let perpage: Int
-  let total: Int
+  let total: String
+  let photo: [PhotoData]
 }
 
 struct PhotoData: Codable {
@@ -46,5 +42,12 @@ struct PhotoData: Codable {
     case isPublic = "ispublic"
     case isFriend = "isfriend"
     case isFamily = "isfamily"
+  }
+}
+extension PhotoData {
+  
+  func getUrl() -> URL? {
+    let urlString = "https://farm\(farm).staticflickr.com/\(server)/\(id)_\(secret).jpg"
+    return URL(string: urlString)
   }
 }

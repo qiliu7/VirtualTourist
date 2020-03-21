@@ -28,23 +28,46 @@ class MapViewController: UIViewController {
   }
   
   // MARK: Actions
-  @objc func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
+  @objc func placeNewPin(_ gestureRecognizer: UILongPressGestureRecognizer) {
     if gestureRecognizer.state != .began {
       return
     }
     let location = gestureRecognizer.location(in: mapView)
-
+    
     let annotation = MKPointAnnotation()
-    annotation.coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+    let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+    annotation.coordinate = coordinate
     mapView.addAnnotation(annotation)
     
     let pin = Pin(context: dataController.viewContext)
-    pin.lat = annotation.coordinate.latitude
-    pin.lon = annotation.coordinate.longitude
+    pin.lat = coordinate.latitude
+    pin.lon = coordinate.longitude
     do {
         _ = try dataController.viewContext.save()
     } catch {
       print(error.localizedDescription)
+    }
+    pins.append(pin)
+    FlickrAPI.getImageURLForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
+  }
+  
+  private func handleImageURLResponse(urls: [URL]?, error: Error?) {
+    // Save urls to Photo
+    guard let urls = urls else {
+      // TODO: handles error
+      print(error!.localizedDescription)
+      return
+    }
+    // create photos belongs to pin and assign url
+    for url in urls {
+      let aPhoto = Photo(context: dataController.viewContext)
+      aPhoto.pin = pins.last
+      aPhoto.url = url
+      do {
+        try dataController.viewContext.save()
+      } catch {
+        fatalError("not able to save \(error.localizedDescription)")
+      }
     }
   }
   
@@ -57,7 +80,7 @@ class MapViewController: UIViewController {
     mapView.setRegion(mapRegion, animated: true)
     mapView.delegate = self
     let longPress = UILongPressGestureRecognizer()
-    longPress.addTarget(self, action: #selector(handleLongPress(_:)))
+    longPress.addTarget(self, action: #selector(placeNewPin(_:)))
     mapView.addGestureRecognizer(longPress)
     mapView.addAnnotations(fetchStoredPins())
    }
@@ -77,7 +100,8 @@ class MapViewController: UIViewController {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     let photoAlbumVC = segue.destination as! PhotoAlbumViewController
-    photoAlbumVC.coordinate = sender as? CLLocationCoordinate2D
+    let selectedCoordinate = sender as! CLLocationCoordinate2D
+    photoAlbumVC.coordinate = selectedCoordinate
   }
 }
 

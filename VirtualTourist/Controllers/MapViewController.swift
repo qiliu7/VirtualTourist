@@ -25,10 +25,11 @@ class MapViewController: UIViewController {
     super.viewDidLoad()
     configureNavBar()
     configureMapView()
+//    deleteDataEntry()
   }
   
   // MARK: Actions
-  @objc func placeNewPin(_ gestureRecognizer: UILongPressGestureRecognizer) {
+  @objc func addNewPin(_ gestureRecognizer: UILongPressGestureRecognizer) {
     if gestureRecognizer.state != .began {
       return
     }
@@ -58,7 +59,7 @@ class MapViewController: UIViewController {
       print(error!.localizedDescription)
       return
     }
-    // create photos belongs to pin and assign url
+    // create photos associated with the new pin and store their url
     for url in urls {
       let aPhoto = Photo(context: dataController.viewContext)
       aPhoto.pin = pins.last
@@ -80,7 +81,7 @@ class MapViewController: UIViewController {
     mapView.setRegion(mapRegion, animated: true)
     mapView.delegate = self
     let longPress = UILongPressGestureRecognizer()
-    longPress.addTarget(self, action: #selector(placeNewPin(_:)))
+    longPress.addTarget(self, action: #selector(addNewPin(_:)))
     mapView.addGestureRecognizer(longPress)
     mapView.addAnnotations(fetchStoredPins())
    }
@@ -100,8 +101,9 @@ class MapViewController: UIViewController {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     let photoAlbumVC = segue.destination as! PhotoAlbumViewController
-    let selectedCoordinate = sender as! CLLocationCoordinate2D
-    photoAlbumVC.coordinate = selectedCoordinate
+    let pin = sender as! Pin
+    photoAlbumVC.dataController = dataController
+    photoAlbumVC.selectedPin = pin
   }
 }
 
@@ -122,7 +124,33 @@ extension MapViewController: MKMapViewDelegate {
   }
   
   // MARK: Anti Pattern?
+  // 怎么关联？？？
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    performSegue(withIdentifier: Name.showPhotosSegue, sender: view.annotation?.coordinate)
+    performSegue(withIdentifier: Name.showPhotosSegue, sender: view.annotation?.findAssociatedPin(pins))
+  }
+  
+  // MARK: FOR TEST ONLY
+  fileprivate func deleteDataEntry() {
+    //MARK: clear core data for test
+    let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
+    if let result = try? dataController.viewContext.fetch(fetchRequest){
+      for pin in result {
+        dataController.viewContext.delete(pin)
+      }
+    }
+    try? dataController.viewContext.save()
+  }
+}
+
+extension MKAnnotation {
+  
+  func findAssociatedPin(_ pins: [Pin]) -> Pin? {
+    for pin in pins {
+      if pin.lat == self.coordinate.latitude &&
+        pin.lon == self.coordinate.longitude {
+        return pin
+      }
+    }
+    return nil
   }
 }

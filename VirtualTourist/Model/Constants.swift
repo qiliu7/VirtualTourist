@@ -15,7 +15,9 @@ struct Name {
 }
 
 struct Setting {
-  static let numberOfPhotos = 50
+  static let photoPerRow = 3
+  static let numberOfRows = 20
+  static let numberOfPhotos = Setting.photoPerRow * Setting.numberOfRows
 }
 
 struct DefaultMapSetting {

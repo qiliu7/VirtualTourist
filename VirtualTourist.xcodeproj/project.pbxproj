@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B13379D7242D608D00E2CF64 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13379D6242D608D00E2CF64 /* Error.swift */; };
+		B16F46A7242BD6DF0015F822 /* ImagesForLocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */; };
 		B186D4B8241E201A00799DAC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B186D4B7241E201A00799DAC /* MapViewController.swift */; };
 		B186D4DD24211BA900799DAC /* Pin+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B186D4DC24211BA900799DAC /* Pin+Extensions.swift */; };
 		B186D4E02422770500799DAC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B186D4DF2422770500799DAC /* Constants.swift */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B13379D6242D608D00E2CF64 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesForLocationModel.swift; sourceTree = "<group>"; };
 		B186D4B7241E201A00799DAC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B186D4DC24211BA900799DAC /* Pin+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pin+Extensions.swift"; sourceTree = "<group>"; };
 		B186D4DF2422770500799DAC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -109,6 +113,7 @@
 		B1D5275D2416BC72000977B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */,
 				B186D4DF2422770500799DAC /* Constants.swift */,
 				B186D4DE24211BB100799DAC /* Managed Object Extensions */,
 				B1F01E33241CAA8B00B0150B /* DataController.swift */,
@@ -116,6 +121,7 @@
 				B1D5274F2416B9B3000977B8 /* VirtualTourist.xcdatamodeld */,
 				B1F01E2D241C5BE400B0150B /* Network */,
 				B1F01E2E241C5C9300B0150B /* Response */,
+				B13379D6242D608D00E2CF64 /* Error.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -243,6 +249,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B13379D7242D608D00E2CF64 /* Error.swift in Sources */,
 				B186D4DD24211BA900799DAC /* Pin+Extensions.swift in Sources */,
 				B1D527512416B9B3000977B8 /* VirtualTourist.xcdatamodeld in Sources */,
 				B186D4E22422814500799DAC /* PhotoAlbumViewController.swift in Sources */,
@@ -252,6 +259,7 @@
 				B1F01E34241CAA8B00B0150B /* DataController.swift in Sources */,
 				B1F01E28241B570A00B0150B /* ApiKey.swift in Sources */,
 				B1F01E30241C7F6B00B0150B /* DispatchToMainHelper.swift in Sources */,
+				B16F46A7242BD6DF0015F822 /* ImagesForLocationModel.swift in Sources */,
 				B1F01E2C241C5BD600B0150B /* ImagesForLocationResponse.swift in Sources */,
 				B18D2AC1241CB1A8003574C7 /* AppDelegate.swift in Sources */,
 				B186D4E7242A878900799DAC /* PhotoCollectionViewCell.swift in Sources */,

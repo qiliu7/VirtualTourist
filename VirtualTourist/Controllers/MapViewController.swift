@@ -49,11 +49,11 @@ class MapViewController: UIViewController {
       print(error.localizedDescription)
     }
     pins.append(pin)
-    FlickrAPI.getImageURLForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
+    FlickrAPI.getImageInfoForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
   }
   
   private func handleImageURLResponse(urls: [URL]?, error: Error?) {
-    // Save urls to Photo
+    // save urls to Photo
     guard let urls = urls else {
       // TODO: handles error
       print(error!.localizedDescription)
@@ -124,7 +124,6 @@ extension MapViewController: MKMapViewDelegate {
   }
   
   // MARK: Anti Pattern?
-  // 怎么关联？？？
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     performSegue(withIdentifier: Name.showPhotosSegue, sender: view.annotation?.findAssociatedPin(pins))
   }

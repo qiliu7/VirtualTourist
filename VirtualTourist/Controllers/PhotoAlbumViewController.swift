@@ -71,7 +71,6 @@ class PhotoAlbumViewController: UIViewController {
   }
   
   @objc func handleRefreshControl() {
-    print("refreshing")
     FlickrAPI.getTotalImagePagesForPin(selectedPin, completion: handleRefreshResponse(totalPages:error:))
   }
   
@@ -80,14 +79,12 @@ class PhotoAlbumViewController: UIViewController {
       // MARK: Show alert error
       return
     }
-    print(pages)
     if pages == 1 {
       // MARK: Show alert cant refresh
       print("Location has only 1 page of photos")
     } else {
       // get photos on a random page
       let randomPage = Int.random(in: 2...pages)
-      print(randomPage)
       FlickrAPI.getImageURLsForLocation(coordinate: CLLocationCoordinate2D(latitude: selectedPin.lat, longitude: selectedPin.lon), onPage: randomPage, completion: handleImageURLResponse(urls:error:))
     }
   }
@@ -101,7 +98,6 @@ class PhotoAlbumViewController: UIViewController {
     }
     // rewrite urls in stored Photos
     if let photos = fetchedResultController.fetchedObjects {
-      print("\(photos.count), \(urls.count)")
       for (photo, newURL) in zip(photos, urls) {
         photo.url = newURL
       }

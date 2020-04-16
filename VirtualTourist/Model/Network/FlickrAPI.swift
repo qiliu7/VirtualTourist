@@ -52,10 +52,10 @@ class FlickrAPI {
     }
   }
   
-  class func getImageInfoForLocation(coordinate: CLLocationCoordinate2D, completion: @escaping ([URL]?, Error?) -> Void) {
+  class func getImageURLsForLocation(coordinate: CLLocationCoordinate2D, onPage: Int = 1, completion: @escaping ([URL]?, Error?) -> Void) {
     let lat = coordinate.latitude
     let lon = coordinate.longitude
-    let url = Endpoint.searchImagesForLocation(lat: lat, lon: lon).url
+    let url = Endpoint.searchImagesForLocation(lat: lat, lon: lon, page: onPage).url
     let task = session.dataTask(with: url) { (data, response, error) in
       guard let data = data else {
         dispatchToMain {
@@ -128,45 +128,44 @@ class FlickrAPI {
     task.resume()
   }
   
-  // what if total page is one, gets set as handler in VC
-  class func getImageOnRandomPage(totalPages: Int, pin: Pin, completion: @escaping ([URL]?, Error?) -> Void) {
-    let url = Endpoint.searchImagesForLocation(lat: pin.lat, lon: pin.lon, page: Int.random(in: 2...totalPages)).url
-    let task = session.dataTask(with: url) { (data, response, error) in
-      guard let data = data else {
-        dispatchToMain {
-          completion(nil, error)
-        }
-        return
-      }
-      let decoder = JSONDecoder()
-      do {
-        let responseObject = try decoder.decode(ImagesForLoctaionResponse.self, from: data)
-        let photos = responseObject.photos.photo
-        var urls = [URL]()
-        let max = photos.count < Setting.numberOfPhotos ? photos.count : Setting.numberOfPhotos
-        for photo in photos[0..<max] {
-          if let url = photo.getUrl() {
-            urls.append(url)
-          }
-        }
-        dispatchToMain {
-          completion(urls, nil)
-        }
-      } catch {
-        do {
-          let errorResponse = try decoder.decode(FlickrResponse.self, from: data)
-          dispatchToMain {
-            completion(nil, errorResponse)
-          }
-        } catch {
-          dispatchToMain {
-            completion(nil, error)
-          }
-        }
-      }
-    }
-    task.resume()
-  }
+//  class func getImageOnRandomPage(totalPages: Int, pin: Pin, completion: @escaping ([URL]?, Error?) -> Void) {
+//    let url = Endpoint.searchImagesForLocation(lat: pin.lat, lon: pin.lon, page: Int.random(in: 2...totalPages)).url
+//    let task = session.dataTask(with: url) { (data, response, error) in
+//      guard let data = data else {
+//        dispatchToMain {
+//          completion(nil, error)
+//        }
+//        return
+//      }
+//      let decoder = JSONDecoder()
+//      do {
+//        let responseObject = try decoder.decode(ImagesForLoctaionResponse.self, from: data)
+//        let photos = responseObject.photos.photo
+//        var urls = [URL]()
+//        let max = photos.count < Setting.numberOfPhotos ? photos.count : Setting.numberOfPhotos
+//        for photo in photos[0..<max] {
+//          if let url = photo.getUrl() {
+//            urls.append(url)
+//          }
+//        }
+//        dispatchToMain {
+//          completion(urls, nil)
+//        }
+//      } catch {
+//        do {
+//          let errorResponse = try decoder.decode(FlickrResponse.self, from: data)
+//          dispatchToMain {
+//            completion(nil, errorResponse)
+//          }
+//        } catch {
+//          dispatchToMain {
+//            completion(nil, error)
+//          }
+//        }
+//      }
+//    }
+//    task.resume()
+//  }
   
   class func downloadImage(with url: URL, completion: @escaping (Data?, Error?) -> Void) {
     let task = session.dataTask(with: url) { (data, response, error) in

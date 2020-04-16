@@ -80,10 +80,15 @@ class PhotoAlbumViewController: UIViewController {
       // MARK: Show alert error
       return
     }
-    if totalPages == 1 {
+    print(pages)
+    if pages == 1 {
       // MARK: Show alert cant refresh
+      print("Location has only 1 page of photos")
     } else {
-      FlickrAPI.getImageOnRandomPage(totalPages: pages, pin: selectedPin, completion: handleImageURLResponse(urls:error:))
+      // get photos on a random page
+      let randomPage = Int.random(in: 2...pages)
+      print(randomPage)
+      FlickrAPI.getImageURLsForLocation(coordinate: CLLocationCoordinate2D(latitude: selectedPin.lat, longitude: selectedPin.lon), onPage: randomPage, completion: handleImageURLResponse(urls:error:))
     }
   }
   
@@ -96,11 +101,11 @@ class PhotoAlbumViewController: UIViewController {
     }
     // rewrite urls in stored Photos
     if let photos = fetchedResultController.fetchedObjects {
+      print("\(photos.count), \(urls.count)")
       for (photo, newURL) in zip(photos, urls) {
         photo.url = newURL
       }
     }
-    
     do {
       try dataController.viewContext.save()
     } catch {
@@ -111,23 +116,30 @@ class PhotoAlbumViewController: UIViewController {
   
   private func downloadImages() {
     let photos = fetchedResultController.fetchedObjects
+    
+    let downloadGroup = DispatchGroup()
+    var storedError: NSError?
     if let photos = photos {
       for photo in photos {
         if let url = photo.url {
+          downloadGroup.enter()
           FlickrAPI.downloadImage(with: url) { (data, error) in
-            guard let data = data else {
-              print("error downloading image\(error!.localizedDescription)")
-              return
-            }
-            photo.image = data
-            do {
-              try self.dataController.viewContext.save()
-              self.collectionView.refreshControl?.endRefreshing()
-            } catch {
-              fatalError(error.localizedDescription)
+            if error != nil {
+              storedError = error as NSError?
+            } else {
+              photo.image = data
             }
           }
+          downloadGroup.leave()
         }
+      }
+    }
+    downloadGroup.notify(queue: DispatchQueue.main) {
+      do {
+        try self.dataController.viewContext.save()
+        self.collectionView.refreshControl?.endRefreshing()
+      } catch {
+        fatalError(error.localizedDescription)
       }
     }
   }
@@ -161,25 +173,22 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
     return cell
   }
 }
-
-//extension PhotoAlbumViewController: UICollectionViewDelegateFlowLayout {
-//
-//  func collectionView(_ collectionView: UICollectionView,
-//                      layout collectionViewLayout: UICollectionViewLayout,
-//                      sizeForItemAt indexPath: IndexPath) -> CGSize {
-//
-//    return CGSize(width: 200, height: 200)
-//  }
-//}
-
-extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-    collectionView.reloadItems(at: [indexPath!])
+  
+  extension PhotoAlbumViewController: UICollectionViewDelegateFlowLayout {
+  
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+  
+      return CGSize(width: 200, height: 200)
+    }
   }
   
-  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-    collectionView.reloadData()
-  }
+  extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+      collectionView.reloadData()
+    }
+ 
 }
 
 

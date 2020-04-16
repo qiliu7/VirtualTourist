@@ -49,7 +49,7 @@ class MapViewController: UIViewController {
       print(error.localizedDescription)
     }
     pins.append(pin)
-    FlickrAPI.getImageInfoForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
+    FlickrAPI.getImageURLsForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
   }
   
   private func handleImageURLResponse(urls: [URL]?, error: Error?) {

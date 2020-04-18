@@ -15,7 +15,7 @@ class MapViewController: UIViewController {
   // MARK: Properties
   var dataController: DataController!
   var pins = [Pin]()
-  var mapRegion: MKCoordinateRegion = DefaultMapSetting.region
+  var mapRegion: MKCoordinateRegion!
   
   // MARK: Outlets
   @IBOutlet weak var mapView: MKMapView!

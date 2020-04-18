@@ -21,13 +21,13 @@ struct Setting {
 }
 
 struct DefaultMapSetting {
-  static let center = CLLocationCoordinate2D(latitude: 50.49984733546685, longitude: -98.46515985375761)
-  static let region = MKCoordinateRegion(center: DefaultMapSetting.center, latitudinalMeters: 103.91172475308929, longitudinalMeters: 88.73235233334937)
+  static let center = CLLocationCoordinate2D(latitude: 42.44935469166303, longitude: -98.23396319017317)
+  static let region = MKCoordinateRegion(center: DefaultMapSetting.center, span: MKCoordinateSpan(latitudeDelta: 109.63462025101087, longitudeDelta: 86.32466104386504))
 }
 
 struct UserDefaultsKeyMap {
   static let centerLat = "mapCenterLatitude"
   static let centerLon = "mapCenterLongitude"
-  static let regionLat = "mapRegionLatitude"
-  static let regionLon = "mapRegionLongitude"
+  static let latDelta = "mapRegionLatitude"
+  static let lonDelta = "mapRegionLongitude"
 }

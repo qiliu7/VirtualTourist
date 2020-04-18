@@ -7,7 +7,7 @@
 //
 
 import UIKit
-//import MapKit
+import MapKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -67,26 +67,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   fileprivate func loadMapSetting() {
+    // has launched the app previously
     if let latCenter = userDefaults.value(forKey: UserDefaultsKeyMap.centerLat) as? Double,
       let lonCenter = userDefaults.value(forKey: UserDefaultsKeyMap.centerLon) as? Double,
-      let latRegion = userDefaults.value(forKey: UserDefaultsKeyMap.regionLat) as? Double,
-      let lonRegion = userDefaults.value(forKey: UserDefaultsKeyMap.regionLon) as? Double {
-      mapViewController.mapRegion.center.latitude = latCenter
-      mapViewController.mapRegion.center.longitude = lonCenter
-      mapViewController.mapRegion.span.latitudeDelta = latRegion
-      mapViewController.mapRegion.span.longitudeDelta = lonRegion
+      let latRegion = userDefaults.value(forKey: UserDefaultsKeyMap.latDelta) as? Double,
+      let lonRegion = userDefaults.value(forKey: UserDefaultsKeyMap.lonDelta) as? Double {
+      mapViewController.mapRegion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latCenter, longitude: lonCenter), span: MKCoordinateSpan(latitudeDelta: latRegion, longitudeDelta: lonRegion))
+      // is the first time to have launched the app
+    } else {
+      mapViewController.mapRegion = DefaultMapSetting.region
     }
   }
   
   fileprivate func saveMapSetting() {
     let latCenter = mapViewController.mapView.centerCoordinate.latitude
     let lonCenter = mapViewController.mapView.centerCoordinate.longitude
-    let latRegion = mapViewController.mapView.region.span.latitudeDelta
-    let lonRegion = mapViewController.mapView.region.span.longitudeDelta
+    let latDelta = mapViewController.mapView.region.span.latitudeDelta
+    let lonDelta = mapViewController.mapView.region.span.longitudeDelta
     userDefaults.set(latCenter, forKey: UserDefaultsKeyMap.centerLat)
     userDefaults.set(lonCenter, forKey: UserDefaultsKeyMap.centerLon)
-    userDefaults.set(latRegion, forKey: UserDefaultsKeyMap.regionLat)
-    userDefaults.set(lonRegion, forKey: UserDefaultsKeyMap.regionLon)
+    userDefaults.set(latDelta, forKey: UserDefaultsKeyMap.latDelta)
+    userDefaults.set(lonDelta, forKey: UserDefaultsKeyMap.lonDelta)
+    print(latCenter, lonCenter, latDelta, lonDelta)
   }
 
 }

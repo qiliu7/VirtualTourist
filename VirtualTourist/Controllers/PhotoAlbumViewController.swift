@@ -36,7 +36,7 @@ class PhotoAlbumViewController: UIViewController {
   private func setUpMapView() {
     mapView.delegate = self
     let annotation = selectedPin.convertToAnnotation()
-    mapView.setCenter(annotation.coordinate, animated: true)
+    mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 10_000, longitudinalMeters: 10_000), animated: true)
     mapView.addAnnotation(annotation)
   }
   

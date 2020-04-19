@@ -31,7 +31,6 @@
 /* Begin PBXFileReference section */
 		B13379D6242D608D00E2CF64 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesForLocationModel.swift; sourceTree = "<group>"; };
-		B18266932447E8A500BC91A0 /* ApiKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKey.swift; sourceTree = "<group>"; };
 		B18266952447E93F00BC91A0 /* ApiKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiKey.swift; sourceTree = "<group>"; };
 		B186D4B7241E201A00799DAC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B186D4DC24211BA900799DAC /* Pin+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pin+Extensions.swift"; sourceTree = "<group>"; };
@@ -175,7 +174,6 @@
 			children = (
 				B1F01E2F241C7F6B00B0150B /* DispatchToMainHelper.swift */,
 				B18266952447E93F00BC91A0 /* ApiKey.swift */,
-				B18266932447E8A500BC91A0 /* ApiKey.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";

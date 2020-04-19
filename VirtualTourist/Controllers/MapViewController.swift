@@ -28,50 +28,6 @@ class MapViewController: UIViewController {
 //    deleteDataEntry()
   }
   
-  // MARK: Actions
-  @objc func addNewPin(_ gestureRecognizer: UILongPressGestureRecognizer) {
-    if gestureRecognizer.state != .began {
-      return
-    }
-    let location = gestureRecognizer.location(in: mapView)
-    
-    let annotation = MKPointAnnotation()
-    let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
-    annotation.coordinate = coordinate
-    mapView.addAnnotation(annotation)
-    
-    let pin = Pin(context: dataController.viewContext)
-    pin.lat = coordinate.latitude
-    pin.lon = coordinate.longitude
-    do {
-        _ = try dataController.viewContext.save()
-    } catch {
-      print(error.localizedDescription)
-    }
-    pins.append(pin)
-    FlickrAPI.getImageURLsForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
-  }
-  
-  private func handleImageURLResponse(urls: [URL]?, error: Error?) {
-    // save urls to Photo
-    guard let urls = urls else {
-      // TODO: handles error
-      print(error!.localizedDescription)
-      return
-    }
-    // create photos associated with the new pin and store their url
-    for url in urls {
-      let aPhoto = Photo(context: dataController.viewContext)
-      aPhoto.pin = pins.last
-      aPhoto.url = url
-      do {
-        try dataController.viewContext.save()
-      } catch {
-        fatalError("not able to save \(error.localizedDescription)")
-      }
-    }
-  }
-  
   // MARK: Set UI & MapView
   private func configureNavBar() {
     navigationItem.title = ""
@@ -85,6 +41,51 @@ class MapViewController: UIViewController {
     mapView.addGestureRecognizer(longPress)
     mapView.addAnnotations(fetchStoredPins())
    }
+  
+  // MARK: Actions
+   @objc func addNewPin(_ gestureRecognizer: UILongPressGestureRecognizer) {
+     if gestureRecognizer.state != .began {
+       return
+     }
+     let location = gestureRecognizer.location(in: mapView)
+     
+     let annotation = MKPointAnnotation()
+     let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
+     annotation.coordinate = coordinate
+     mapView.addAnnotation(annotation)
+     
+     let pin = Pin(context: dataController.viewContext)
+     pin.lat = coordinate.latitude
+     pin.lon = coordinate.longitude
+     do {
+         _ = try dataController.viewContext.save()
+     } catch {
+       print(error.localizedDescription)
+     }
+     pins.append(pin)
+     FlickrAPI.getImageURLsForLocation(coordinate: coordinate, completion: handleImageURLResponse(urls:error:))
+   }
+  
+  private func handleImageURLResponse(urls: [URL]?, error: Error?) {
+    // save urls to Photo
+    guard let urls = urls else {
+      // TODO: handles error
+      print(error!.localizedDescription)
+      return
+    }
+    // create photos associated with the new pin and store their url
+    print(urls)
+    for url in urls {
+      let aPhoto = Photo(context: dataController.viewContext)
+      aPhoto.pin = pins.last
+      aPhoto.url = url
+      do {
+        try dataController.viewContext.save()
+      } catch {
+        fatalError("not able to save \(error.localizedDescription)")
+      }
+    }
+  }
   
   // MARK: Fetch Pin
   private func fetchStoredPins() -> [MKPointAnnotation] {

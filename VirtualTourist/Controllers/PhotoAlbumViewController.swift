@@ -27,7 +27,6 @@ class PhotoAlbumViewController: UIViewController {
   // MARK: Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    collectionView.dataSource = self
     setUpFetchedResultController()
     setUpMapView()
     configureCollectionView()
@@ -58,6 +57,7 @@ class PhotoAlbumViewController: UIViewController {
   }
   
   private func configureCollectionView() {
+    collectionView.dataSource = self
     collectionView.refreshControl = UIRefreshControl()
     collectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
     
@@ -170,20 +170,10 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
   }
 }
   
-  extension PhotoAlbumViewController: UICollectionViewDelegateFlowLayout {
-  
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-  
-      return CGSize(width: 200, height: 200)
-    }
-  }
-  
   extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-      collectionView.reloadData()
-    }
+//    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//      collectionView.reloadData()
+//    }
  
 }
 

@@ -88,7 +88,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     userDefaults.set(lonCenter, forKey: UserDefaultsKeyMap.centerLon)
     userDefaults.set(latDelta, forKey: UserDefaultsKeyMap.latDelta)
     userDefaults.set(lonDelta, forKey: UserDefaultsKeyMap.lonDelta)
-    print(latCenter, lonCenter, latDelta, lonDelta)
   }
 
 }

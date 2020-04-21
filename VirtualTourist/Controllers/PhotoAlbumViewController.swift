@@ -17,16 +17,14 @@ class PhotoAlbumViewController: UIViewController {
   var fetchedResultController: NSFetchedResultsController<Photo>!
   var selectedPin: Pin!
   
-  private let itemsPerRow: CGFloat = 3
-  
   // MARK: Outlets
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var collectionView: UICollectionView!
   @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
   
   // MARK: Life Cycle
-  override func viewDidLoad() {
-    super.viewDidLoad()
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     setUpFetchedResultController()
     setUpMapView()
     configureCollectionView()
@@ -50,7 +48,7 @@ class PhotoAlbumViewController: UIViewController {
   private func setUpMapView() {
     mapView.delegate = self
     let annotation = selectedPin.convertToAnnotation()
-    mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 10_000, longitudinalMeters: 10_000), animated: true)
+    mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 50_000, longitudinalMeters: 50_000), animated: true)
     mapView.addAnnotation(annotation)
   }
   
@@ -73,7 +71,7 @@ class PhotoAlbumViewController: UIViewController {
   private func configureCollectionView() {
     collectionView.dataSource = self
     collectionView.refreshControl = UIRefreshControl()
-    collectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+    collectionView.refreshControl!.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
     
     let photoPerRow = Setting.photoPerRow
     let space: CGFloat = CGFloat(3.0)
@@ -147,7 +145,11 @@ class PhotoAlbumViewController: UIViewController {
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
-        self.collectionView.refreshControl?.endRefreshing()
+        print("saved", Thread())
+        if self.collectionView.refreshControl!.isRefreshing {
+          print("end refreshing")
+          self.collectionView.refreshControl?.endRefreshing()
+        }
       } catch {
         fatalError(error.localizedDescription)
       }
@@ -185,9 +187,8 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
 }
   
   extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-//    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//      collectionView.reloadData()
-//    }
- 
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+      collectionView.reloadData()
+    }
 }
 

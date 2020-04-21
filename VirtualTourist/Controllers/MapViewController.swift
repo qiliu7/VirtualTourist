@@ -74,7 +74,6 @@ class MapViewController: UIViewController {
       return
     }
     // create photos associated with the new pin and store their url
-    print(urls)
     for url in urls {
       let aPhoto = Photo(context: dataController.viewContext)
       aPhoto.pin = pins.last

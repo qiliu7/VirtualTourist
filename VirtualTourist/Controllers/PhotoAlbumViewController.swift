@@ -30,7 +30,21 @@ class PhotoAlbumViewController: UIViewController {
     setUpFetchedResultController()
     setUpMapView()
     configureCollectionView()
-    downloadImages()
+    
+    // if has previous stored photos, show those
+    if let fetchedPhoto = fetchedResultController.fetchedObjects?.first{
+      fetchedPhoto.image == nil ? downloadImages() : ()
+    }
+  }
+
+  deinit {
+    print("deinit")
+    mapView.delegate = nil
+    mapView = nil
+    fetchedResultController.delegate = nil
+    fetchedResultController = nil
+    selectedPin = nil
+    dataController = nil
   }
   
   private func setUpMapView() {
@@ -176,5 +190,4 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
 //    }
  
 }
-
 

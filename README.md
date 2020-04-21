@@ -11,3 +11,4 @@ git clone https://github.com/qiliu7/VirtualTourist.git
 ```swift
 static let apiKey = "INSERT APIKEY HERE"
 ```
+5. Your are good to go!

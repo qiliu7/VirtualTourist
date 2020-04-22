@@ -28,11 +28,7 @@ class PhotoAlbumViewController: UIViewController {
     setUpFetchedResultController()
     setUpMapView()
     configureCollectionView()
-    
-    // if has previous stored photos, show those
-    if let fetchedPhoto = fetchedResultController.fetchedObjects?.first{
-      fetchedPhoto.image == nil ? downloadImages() : ()
-    }
+    loadImages()
   }
 
   deinit {
@@ -80,6 +76,17 @@ class PhotoAlbumViewController: UIViewController {
     flowLayout.minimumLineSpacing = space
     flowLayout.minimumInteritemSpacing = space
     flowLayout.itemSize = CGSize(width: dimension, height: dimension)
+  }
+  
+  
+  fileprivate func loadImages() {
+    if fetchedResultController.fetchedObjects?.count == 0 {
+      showAlert(title: "No Images", message: "No images available for this location. Please try somewhere else.", OKHandler: nil)
+    }
+    // if has previous stored photos, show those
+    if let fetchedPhoto = fetchedResultController.fetchedObjects?.first{
+      fetchedPhoto.image == nil ? downloadImages() : ()
+    }
   }
   
   @objc func handleRefreshControl() {
@@ -141,12 +148,11 @@ class PhotoAlbumViewController: UIViewController {
         }
       }
     }
+    // Notify the main thread when all images finished downloading
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
-        print("saved", Thread())
         if self.collectionView.refreshControl!.isRefreshing {
-          print("end refreshing")
           self.collectionView.refreshControl?.endRefreshing()
         }
       } catch {

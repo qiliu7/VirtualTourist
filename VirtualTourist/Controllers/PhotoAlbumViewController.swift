@@ -92,7 +92,7 @@ class PhotoAlbumViewController: UIViewController {
       return
     }
     if pages == 1 {
-      // MARK: Show alert cant refresh
+      showAlert(title: "Can Not Refresh", message: "Current location has only one page of photos.", OKHandler: {_ in self.collectionView.refreshControl?.endRefreshing()})
       print("Location has only 1 page of photos")
     } else {
       // get photos on a random page
@@ -104,8 +104,7 @@ class PhotoAlbumViewController: UIViewController {
   private func handleImageURLResponse(urls: [URL]?, error: Error?) {
     // save urls to Photo
     guard let urls = urls else {
-      // TODO: handles error
-      print(error!.localizedDescription)
+      showAlert(title: "Error", message: "Retrive images failed \(error!.localizedDescription)", OKHandler:  {_ in self.collectionView.refreshControl?.endRefreshing()})
       return
     }
     // rewrite urls in stored Photos

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B13379D7242D608D00E2CF64 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = B13379D6242D608D00E2CF64 /* Error.swift */; };
+		B14661F9244FD40A0039B55B /* PhotoAlbumViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14661F8244FD40A0039B55B /* PhotoAlbumViewController+Extensions.swift */; };
 		B16F46A7242BD6DF0015F822 /* ImagesForLocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */; };
 		B18266962447E93F00BC91A0 /* ApiKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18266952447E93F00BC91A0 /* ApiKey.swift */; };
 		B186D4B8241E201A00799DAC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B186D4B7241E201A00799DAC /* MapViewController.swift */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		B13379D6242D608D00E2CF64 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		B14661F8244FD40A0039B55B /* PhotoAlbumViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoAlbumViewController+Extensions.swift"; sourceTree = "<group>"; };
 		B16F46A6242BD6DF0015F822 /* ImagesForLocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesForLocationModel.swift; sourceTree = "<group>"; };
 		B18266952447E93F00BC91A0 /* ApiKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiKey.swift; sourceTree = "<group>"; };
 		B186D4B7241E201A00799DAC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 			children = (
 				B186D4B7241E201A00799DAC /* MapViewController.swift */,
 				B186D4E12422814500799DAC /* PhotoAlbumViewController.swift */,
+				B14661F8244FD40A0039B55B /* PhotoAlbumViewController+Extensions.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 				B186D4E22422814500799DAC /* PhotoAlbumViewController.swift in Sources */,
 				B1F01E32241C81D700B0150B /* FlickrResponse.swift in Sources */,
 				B1D527492416B9B3000977B8 /* SceneDelegate.swift in Sources */,
+				B14661F9244FD40A0039B55B /* PhotoAlbumViewController+Extensions.swift in Sources */,
 				B186D4B8241E201A00799DAC /* MapViewController.swift in Sources */,
 				B1F01E34241CAA8B00B0150B /* DataController.swift in Sources */,
 				B1F01E30241C7F6B00B0150B /* DispatchToMainHelper.swift in Sources */,

@@ -77,7 +77,7 @@ class MapViewController: UIViewController {
     for url in urls {
       let aPhoto = Photo(context: dataController.viewContext)
       aPhoto.pin = pins.last
-      aPhoto.url = url
+      aPhoto.url = url.absoluteString
       do {
         try dataController.viewContext.save()
       } catch {

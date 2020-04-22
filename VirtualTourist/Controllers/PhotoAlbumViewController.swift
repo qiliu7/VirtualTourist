@@ -111,7 +111,7 @@ class PhotoAlbumViewController: UIViewController {
     // rewrite urls in stored Photos
     if let photos = fetchedResultController.fetchedObjects {
       for (photo, newURL) in zip(photos, urls) {
-        photo.url = newURL
+        photo.url = newURL.absoluteString
       }
     }
     do {
@@ -129,7 +129,7 @@ class PhotoAlbumViewController: UIViewController {
     var storedError: NSError?
     if let photos = photos {
       for photo in photos {
-        if let url = photo.url {
+        if let url = URL(string: photo.url ?? "") {
           downloadGroup.enter()
           FlickrAPI.downloadImage(with: url) { (data, error) in
             if error != nil {

@@ -17,6 +17,8 @@ class PhotoAlbumViewController: UIViewController {
   var fetchedResultController: NSFetchedResultsController<Photo>!
   var selectedPin: Pin!
   
+  private var operations = [BlockOperation]()
+  
   // MARK: Outlets
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var collectionView: UICollectionView!
@@ -32,13 +34,14 @@ class PhotoAlbumViewController: UIViewController {
   }
 
   deinit {
-    print("deinit")
     mapView.delegate = nil
     mapView = nil
     fetchedResultController.delegate = nil
     fetchedResultController = nil
-    selectedPin = nil
-    dataController = nil
+    for op in operations {
+      op.cancel()
+    }
+    operations.removeAll()
   }
   
   private func setUpMapView() {
@@ -192,8 +195,48 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
 }
   
   extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
+    
+//    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//      self.collectionView.numberOfItems(inSection: 0)
+//    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+      switch type {
+      case .insert:
+        print("insert")
+        operations.append(BlockOperation(block: {
+        self.collectionView.insertItems(at: [newIndexPath!])
+      }))
+      case .delete:
+        print("delete")
+        operations.append(BlockOperation(block: {
+          self.collectionView.deleteItems(at: [indexPath!])
+        }))
+      case .update:
+        print("update")
+        operations.append(BlockOperation(block: {
+          self.collectionView.reloadItems(at: [indexPath!])
+        }))
+      case .move:
+        print("move")
+        operations.append(BlockOperation(block: {
+          if indexPath != newIndexPath {
+            self.collectionView.moveItem(at: indexPath!, to: newIndexPath!)
+          }
+        }))
+      @unknown default:
+        break
+      }
+    }
+    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-      collectionView.reloadData()
+      collectionView.performBatchUpdates({
+        for op in self.operations {
+          op.start()
+        }
+      }) { (finished) in
+        self.operations.removeAll()
+      }
     }
 }
 

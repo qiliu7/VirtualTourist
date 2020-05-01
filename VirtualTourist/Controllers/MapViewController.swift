@@ -25,12 +25,11 @@ class MapViewController: UIViewController {
     super.viewDidLoad()
     configureNavBar()
     configureMapView()
-    //    deleteDataEntry()
   }
   
   // MARK: Set UI & MapView
   private func configureNavBar() {
-    navigationItem.title = ""
+    navigationItem.title = "Press to Drop Your Pin"
   }
   
   private func configureMapView() {

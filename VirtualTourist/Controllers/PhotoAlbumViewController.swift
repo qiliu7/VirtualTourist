@@ -62,7 +62,6 @@ class PhotoAlbumViewController: UIViewController {
     do {
       try fetchedResultController.performFetch()
     } catch {
-      // TODO: add alert
       fatalError("fetched failed: \(error.localizedDescription)")
     }
   }
@@ -93,48 +92,68 @@ class PhotoAlbumViewController: UIViewController {
   }
   
   @objc func handleRefreshControl() {
+    // remove all photos belong to this pin
+    if let photos = fetchedResultController.fetchedObjects {
+      for photo in photos {
+        dataController.viewContext.delete(photo)
+      }
+      do {
+        try dataController.viewContext.save()
+      } catch {
+        fatalError("not able to save \(error.localizedDescription)")
+      }
+    }
     FlickrAPI.getTotalImagePagesForPin(selectedPin, completion: handleRefreshResponse(totalPages:error:))
   }
-  
+
   private func handleRefreshResponse(totalPages: Int?, error: Error?) {
     guard let pages = totalPages else {
-      // MARK: Show alert error
+      showAlert(title: "Refresh Failed", message: "Error occured \(error?.localizedDescription ?? "").", OKHandler: nil)
       return
     }
+    print("total pages: \(pages)")
     if pages == 1 {
       showAlert(title: "Can Not Refresh", message: "Current location has only one page of photos.", OKHandler: {_ in self.collectionView.refreshControl?.endRefreshing()})
       print("Location has only 1 page of photos")
     } else {
-      // get photos on a random page
-      let randomPage = Int.random(in: 2...pages)
+      
+      // Flickr API seems to return repeated photos when the page number is too large
+      let pageLimit = min(pages, 40)
+      let randomPage = Int.random(in: 2...pageLimit)
+      print("random page: \(randomPage)")
       FlickrAPI.getImageURLsForLocation(coordinate: CLLocationCoordinate2D(latitude: selectedPin.lat, longitude: selectedPin.lon), onPage: randomPage, completion: handleImageURLResponse(urls:error:))
     }
   }
-  
+ 
   private func handleImageURLResponse(urls: [URL]?, error: Error?) {
     // save urls to Photo
     guard let urls = urls else {
       showAlert(title: "Error", message: "Retrive images failed \(error!.localizedDescription)", OKHandler:  {_ in self.collectionView.refreshControl?.endRefreshing()})
       return
     }
-    // rewrite urls in stored Photos
-    if let photos = fetchedResultController.fetchedObjects {
-      for (photo, newURL) in zip(photos, urls) {
-        photo.url = newURL.absoluteString
+    // create photos associated with the selected pin and store their url
+    for url in urls {
+      let aPhoto = Photo(context: dataController.viewContext)
+      aPhoto.pin = selectedPin
+      aPhoto.url = url.absoluteString
+      do {
+        try dataController.viewContext.save()
+      } catch {
+        fatalError("not able to save \(error.localizedDescription)")
       }
-    }
-    do {
-      try dataController.viewContext.save()
-    } catch {
-      fatalError("not able to save url \(error.localizedDescription)")
     }
     downloadImages()
   }
   
   private func downloadImages() {
-    let photos = fetchedResultController.fetchedObjects
+    do {
+      try fetchedResultController.performFetch()
+    } catch {
+      fatalError("fetched failed: \(error.localizedDescription)")
+    }
     
     let downloadGroup = DispatchGroup()
+    let photos = fetchedResultController.fetchedObjects
     var storedError: NSError?
     if let photos = photos {
       for photo in photos {
@@ -143,6 +162,7 @@ class PhotoAlbumViewController: UIViewController {
           FlickrAPI.downloadImage(with: url) { (data, error) in
             if error != nil {
               storedError = error as NSError?
+              print(storedError)
             } else {
               photo.image = data
             }
@@ -155,6 +175,7 @@ class PhotoAlbumViewController: UIViewController {
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
+        try self.fetchedResultController.performFetch()//?????
         if self.collectionView.refreshControl!.isRefreshing {
           self.collectionView.refreshControl?.endRefreshing()
         }
@@ -185,6 +206,7 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    
     let photo = fetchedResultController.object(at: indexPath)
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCollectionViewCell
     if let data = photo.image {
@@ -193,50 +215,50 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
     return cell
   }
 }
+
+extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
   
-  extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-    
-//    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-//      self.collectionView.numberOfItems(inSection: 0)
-//    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-      switch type {
-      case .insert:
-        print("insert")
-        operations.append(BlockOperation(block: {
+  //    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+  //      self.collectionView.numberOfItems(inSection: 0)
+  //    }
+  
+  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    switch type {
+    case .insert:
+      print("insert")
+      operations.append(BlockOperation(block: {
         self.collectionView.insertItems(at: [newIndexPath!])
       }))
-      case .delete:
-        print("delete")
-        operations.append(BlockOperation(block: {
-          self.collectionView.deleteItems(at: [indexPath!])
-        }))
-      case .update:
-        print("update")
-        operations.append(BlockOperation(block: {
-          self.collectionView.reloadItems(at: [indexPath!])
-        }))
-      case .move:
-        print("move")
-        operations.append(BlockOperation(block: {
-          if indexPath != newIndexPath {
-            self.collectionView.moveItem(at: indexPath!, to: newIndexPath!)
-          }
-        }))
-      @unknown default:
-        break
-      }
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-      collectionView.performBatchUpdates({
-        for op in self.operations {
-          op.start()
+    case .delete:
+      print("delete")
+      operations.append(BlockOperation(block: {
+        self.collectionView.deleteItems(at: [indexPath!])
+      }))
+    case .update:
+      print("update")
+      operations.append(BlockOperation(block: {
+        self.collectionView.reloadItems(at: [indexPath!])
+      }))
+    case .move:
+      print("move")
+      operations.append(BlockOperation(block: {
+        if indexPath != newIndexPath {
+          self.collectionView.moveItem(at: indexPath!, to: newIndexPath!)
         }
-      }) { (finished) in
-        self.operations.removeAll()
-      }
+      }))
+    @unknown default:
+      break
     }
+  }
+  
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    collectionView.performBatchUpdates({
+      for op in self.operations {
+        op.start()
+      }
+    }) { (finished) in
+      self.operations.removeAll()
+    }
+  }
 }
 

@@ -121,8 +121,8 @@ extension MapViewController: MKMapViewDelegate {
     return pinView
   }
   
-  // MARK: Anti Pattern?
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    mapView.deselectAnnotation(view.annotation, animated: false)
     performSegue(withIdentifier: Name.showPhotosSegue, sender: view.annotation?.findAssociatedPin(pins))
   }
   

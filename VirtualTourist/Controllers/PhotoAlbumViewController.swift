@@ -196,13 +196,18 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    
-    let photo = fetchedResultController.object(at: indexPath)
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCollectionViewCell
-    if let data = photo.image {
-      cell.imageView.image = UIImage(data: data)
+     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCollectionViewCell
+    // if is called after refresh is called and all the photos are deleted
+    if fetchedResultController.fetchedObjects?.count == 0 {
+      cell.imageView.image = nil
+      // if photos are downloaded
+    } else {
+       let photo = fetchedResultController.object(at: indexPath)
+       if let data = photo.image {
+         cell.imageView.image = UIImage(data: data)
+       }
     }
-    return cell
+  return cell
   }
 }
 

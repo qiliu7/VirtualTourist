@@ -28,14 +28,8 @@ class FlickrAPI {
       
       return components.url!
     }
-    
-    //    static func searchImagesForLocation(lat: Double, lon: Double, forRefresh: Bool = false, pin: Pin? = nil) -> Endpoint {
+
     static func searchImagesForLocation(lat: Double, lon: Double, page: Int = 1) -> Endpoint {
-      //      var page = 1
-      //      if forRefresh {
-      //        let totalPages = ImagesForLocationModel.totalPages[pin!]!
-      //        page = Int.random(in: 1...totalPages)
-      //      }
       return Endpoint(
         host: "www.flickr.com",
         path: "/services/rest/",
@@ -66,10 +60,8 @@ class FlickrAPI {
       let decoder = JSONDecoder()
       do {
         let responseObject = try decoder.decode(ImagesForLoctaionResponse.self, from: data)
-        // save totalPages if is first request不知道Pin啊！可以在viewcontroller里set？=。=
-        //        ImagesForLocationInfo.totalPages[Pin!] =
+
         let photos = responseObject.photos.photo
-        //        let pages = responseObject.photos.pages
         var urls = [URL]()
         let max = photos.count < Setting.numberOfPhotos ? photos.count : Setting.numberOfPhotos
         for photo in photos[0..<max] {
@@ -78,7 +70,7 @@ class FlickrAPI {
           }
         }
         dispatchToMain {
-          completion(urls, nil) //MARK: ????
+          completion(urls, nil)
         }
       } catch {
         do {
@@ -128,45 +120,6 @@ class FlickrAPI {
     task.resume()
   }
   
-//  class func getImageOnRandomPage(totalPages: Int, pin: Pin, completion: @escaping ([URL]?, Error?) -> Void) {
-//    let url = Endpoint.searchImagesForLocation(lat: pin.lat, lon: pin.lon, page: Int.random(in: 2...totalPages)).url
-//    let task = session.dataTask(with: url) { (data, response, error) in
-//      guard let data = data else {
-//        dispatchToMain {
-//          completion(nil, error)
-//        }
-//        return
-//      }
-//      let decoder = JSONDecoder()
-//      do {
-//        let responseObject = try decoder.decode(ImagesForLoctaionResponse.self, from: data)
-//        let photos = responseObject.photos.photo
-//        var urls = [URL]()
-//        let max = photos.count < Setting.numberOfPhotos ? photos.count : Setting.numberOfPhotos
-//        for photo in photos[0..<max] {
-//          if let url = photo.getUrl() {
-//            urls.append(url)
-//          }
-//        }
-//        dispatchToMain {
-//          completion(urls, nil)
-//        }
-//      } catch {
-//        do {
-//          let errorResponse = try decoder.decode(FlickrResponse.self, from: data)
-//          dispatchToMain {
-//            completion(nil, errorResponse)
-//          }
-//        } catch {
-//          dispatchToMain {
-//            completion(nil, error)
-//          }
-//        }
-//      }
-//    }
-//    task.resume()
-//  }
-  
   class func downloadImage(with url: URL, completion: @escaping (Data?, Error?) -> Void) {
     let task = session.dataTask(with: url) { (data, response, error) in
       guard let data = data else {
@@ -180,6 +133,5 @@ class FlickrAPI {
       }
     }
     task.resume()
-    // MARK: TODO: change ERROR MESSAGE
   }
 }

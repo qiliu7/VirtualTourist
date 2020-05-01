@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension PhotoAlbumViewController {
+extension UIViewController {
   
   func showAlert(title: String, message: String, OKHandler: ((UIAlertAction) -> Void)?) {
     let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)

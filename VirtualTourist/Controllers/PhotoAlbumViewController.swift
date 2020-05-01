@@ -32,7 +32,7 @@ class PhotoAlbumViewController: UIViewController {
     configureCollectionView()
     loadImages()
   }
-
+  
   deinit {
     mapView.delegate = nil
     mapView = nil
@@ -98,34 +98,32 @@ class PhotoAlbumViewController: UIViewController {
       for photo in photos {
         dataController.viewContext.delete(photo)
       }
-      do {
-        try dataController.viewContext.save()
-      } catch {
-        fatalError("not able to save \(error.localizedDescription)")
-      }
+//      do {
+//        try dataController.viewContext.save()
+//      } catch {
+//        fatalError("not able to save \(error.localizedDescription)")
+//      }
     }
     FlickrAPI.getTotalImagePagesForPin(selectedPin, completion: handleRefreshResponse(totalPages:error:))
   }
-
+  
   private func handleRefreshResponse(totalPages: Int?, error: Error?) {
     guard let pages = totalPages else {
       showAlert(title: "Refresh Failed", message: "Error occured \(error?.localizedDescription ?? "").", OKHandler: nil)
       return
     }
-    print("total pages: \(pages)")
     if pages == 1 {
       showAlert(title: "Can Not Refresh", message: "Current location has only one page of photos.", OKHandler: {_ in self.collectionView.refreshControl?.endRefreshing()})
-      print("Location has only 1 page of photos")
     } else {
       
       // Flickr API seems to return repeated photos when the page number is too large
       let pageLimit = min(pages, 40)
       let randomPage = Int.random(in: 2...pageLimit)
-      print("random page: \(randomPage)")
+//      print("random page: \(randomPage)")
       FlickrAPI.getImageURLsForLocation(coordinate: CLLocationCoordinate2D(latitude: selectedPin.lat, longitude: selectedPin.lon), onPage: randomPage, completion: handleImageURLResponse(urls:error:))
     }
   }
- 
+  
   private func handleImageURLResponse(urls: [URL]?, error: Error?) {
     // save urls to Photo
     guard let urls = urls else {
@@ -176,7 +174,7 @@ class PhotoAlbumViewController: UIViewController {
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
-        try self.fetchedResultController.performFetch()
+//        try self.fetchedResultController.performFetch()
         if self.collectionView.refreshControl!.isRefreshing {
           self.collectionView.refreshControl?.endRefreshing()
         }
@@ -234,22 +232,18 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
     switch type {
     case .insert:
-      print("insert")
       operations.append(BlockOperation(block: {
         self.collectionView.insertItems(at: [newIndexPath!])
       }))
     case .delete:
-      print("delete")
       operations.append(BlockOperation(block: {
         self.collectionView.deleteItems(at: [indexPath!])
       }))
     case .update:
-      print("update")
       operations.append(BlockOperation(block: {
         self.collectionView.reloadItems(at: [indexPath!])
       }))
     case .move:
-      print("move")
       operations.append(BlockOperation(block: {
         if indexPath != newIndexPath {
           self.collectionView.moveItem(at: indexPath!, to: newIndexPath!)
@@ -261,6 +255,11 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
   }
   
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    do {
+      try fetchedResultController.performFetch()
+    } catch {
+      fatalError(error.localizedDescription)
+    }
     collectionView.performBatchUpdates({
       for op in self.operations {
         op.start()

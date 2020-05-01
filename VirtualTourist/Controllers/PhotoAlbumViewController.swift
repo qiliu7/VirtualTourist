@@ -68,6 +68,7 @@ class PhotoAlbumViewController: UIViewController {
   
   private func configureCollectionView() {
     collectionView.dataSource = self
+    collectionView.delegate = self
     collectionView.refreshControl = UIRefreshControl()
     collectionView.refreshControl!.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
     
@@ -175,7 +176,7 @@ class PhotoAlbumViewController: UIViewController {
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
-        try self.fetchedResultController.performFetch()//?????
+        try self.fetchedResultController.performFetch()
         if self.collectionView.refreshControl!.isRefreshing {
           self.collectionView.refreshControl?.endRefreshing()
         }
@@ -216,11 +217,19 @@ extension PhotoAlbumViewController: UICollectionViewDataSource {
   }
 }
 
+extension PhotoAlbumViewController: UICollectionViewDelegate {
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    let photo = fetchedResultController.object(at: indexPath)
+    dataController.viewContext.delete(photo)
+    do {
+      try dataController.viewContext.save()
+    } catch {
+      fatalError(error.localizedDescription)
+    }
+  }
+}
+
 extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-  
-  //    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-  //      self.collectionView.numberOfItems(inSection: 0)
-  //    }
   
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
     switch type {

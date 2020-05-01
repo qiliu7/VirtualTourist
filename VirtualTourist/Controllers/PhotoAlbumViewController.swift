@@ -83,10 +83,11 @@ class PhotoAlbumViewController: UIViewController {
     flowLayout.itemSize = CGSize(width: dimension, height: dimension)
   }
   
-  
   fileprivate func loadImages() {
     if fetchedResultController.fetchedObjects?.count == 0 {
-      showAlert(title: "No Images", message: "No images available for this location. Please try somewhere else.", OKHandler: nil)
+      showAlert(title: "No Images", message: "No images available for this location. Please try somewhere else.", OKHandler: {_ in
+        self.navigationController?.popViewController(animated: true)
+      })
     }
     // if has previous stored photos, show those
     if let fetchedPhoto = fetchedResultController.fetchedObjects?.first{

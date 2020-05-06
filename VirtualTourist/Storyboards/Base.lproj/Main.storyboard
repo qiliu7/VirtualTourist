@@ -46,13 +46,13 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
                                 <subviews>
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="tC6-cg-wP5">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="180"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="165.5"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" secondItem="tC6-cg-wP5" secondAttribute="height" multiplier="23:10" id="9zL-z6-7ZQ"/>
+                                            <constraint firstAttribute="width" secondItem="tC6-cg-wP5" secondAttribute="height" multiplier="25:10" id="9zL-z6-7ZQ"/>
                                         </constraints>
                                     </mapView>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="XqI-Gp-d2P">
-                                        <rect key="frame" x="0.0" y="183" width="414" height="625"/>
+                                        <rect key="frame" x="0.0" y="168.5" width="414" height="639.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Xxg-Lh-kgp">
                                             <size key="itemSize" width="200" height="200"/>
@@ -88,11 +88,33 @@
                                     </collectionView>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" alpha="0.90000000000000002" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CmQ-bc-fUU">
+                                <rect key="frame" x="97" y="812" width="220" height="50"/>
+                                <color key="backgroundColor" red="0.96460121870000004" green="0.96476620440000005" blue="0.96459084750000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Ikq-52-NrF"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="220" id="dA8-I4-CmU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <state key="normal" title="View New Collection">
+                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="refreshButtonTapped:" destination="C4L-zJ-MzZ" eventType="touchUpInside" id="Kp1-Hz-s2c"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="KXb-q0-oR5" firstAttribute="top" secondItem="l3J-ap-8U6" secondAttribute="top" id="9v0-kW-cIt"/>
                             <constraint firstItem="KXb-q0-oR5" firstAttribute="leading" secondItem="l3J-ap-8U6" secondAttribute="leading" id="CSm-Q3-08P"/>
+                            <constraint firstItem="CmQ-bc-fUU" firstAttribute="centerX" secondItem="1eX-75-j2Q" secondAttribute="centerX" id="Enn-ZM-pfr"/>
+                            <constraint firstItem="l3J-ap-8U6" firstAttribute="bottom" secondItem="CmQ-bc-fUU" secondAttribute="bottom" id="IlR-On-n0A"/>
                             <constraint firstAttribute="bottom" secondItem="KXb-q0-oR5" secondAttribute="bottom" id="SDj-Ie-UMN"/>
                             <constraint firstItem="KXb-q0-oR5" firstAttribute="trailing" secondItem="l3J-ap-8U6" secondAttribute="trailing" id="Yjg-Tw-2Ry"/>
                         </constraints>
@@ -103,6 +125,7 @@
                         <outlet property="collectionView" destination="XqI-Gp-d2P" id="WQp-W7-vfl"/>
                         <outlet property="flowLayout" destination="Xxg-Lh-kgp" id="c9g-Am-ovN"/>
                         <outlet property="mapView" destination="tC6-cg-wP5" id="ul4-U3-yJI"/>
+                        <outlet property="refreshButton" destination="CmQ-bc-fUU" id="67I-Xt-x6F"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1aB-vg-sgG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

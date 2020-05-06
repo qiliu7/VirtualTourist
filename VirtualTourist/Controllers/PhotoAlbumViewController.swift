@@ -23,6 +23,7 @@ class PhotoAlbumViewController: UIViewController {
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var collectionView: UICollectionView!
   @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+  @IBOutlet weak var refreshButton: UIButton!
   
   // MARK: Life Cycle
   override func viewWillAppear(_ animated: Bool) {
@@ -45,6 +46,19 @@ class PhotoAlbumViewController: UIViewController {
     }
     operations.removeAll()
   }
+  
+  // MARK: Actions
+  @IBAction func refreshButtonTapped(_ button: UIButton) {
+    button.isEnabled = false
+    // remove all photos belong to this pin
+    if let photos = fetchedResultController.fetchedObjects {
+      for photo in photos {
+        dataController.viewContext.delete(photo)
+      }
+    }
+    FlickrAPI.getTotalImagePagesForPin(selectedPin, completion: handleRefreshResponse(totalPages:error:))
+  }
+  
   
   private func setUpMapView() {
     mapView.delegate = self
@@ -71,8 +85,6 @@ class PhotoAlbumViewController: UIViewController {
   private func configureCollectionView() {
     collectionView.dataSource = self
     collectionView.delegate = self
-    collectionView.refreshControl = UIRefreshControl()
-    collectionView.refreshControl!.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
     
     let photoPerRow = Setting.photoPerRow
     let space: CGFloat = CGFloat(3.0)
@@ -94,17 +106,7 @@ class PhotoAlbumViewController: UIViewController {
       fetchedPhoto.image == nil ? downloadImages() : ()
     }
   }
-  
-  @objc func handleRefreshControl() {
-    // remove all photos belong to this pin
-    if let photos = fetchedResultController.fetchedObjects {
-      for photo in photos {
-        dataController.viewContext.delete(photo)
-      }
-    }
-    FlickrAPI.getTotalImagePagesForPin(selectedPin, completion: handleRefreshResponse(totalPages:error:))
-  }
-  
+
   private func handleRefreshResponse(totalPages: Int?, error: Error?) {
     guard let pages = totalPages else {
       showAlert(title: "Refresh Failed", message: "Error occured \(error?.localizedDescription ?? "").", OKHandler: nil)
@@ -167,8 +169,8 @@ class PhotoAlbumViewController: UIViewController {
     downloadGroup.notify(queue: DispatchQueue.main) {
       do {
         try self.dataController.viewContext.save()
-        if self.collectionView.refreshControl!.isRefreshing {
-          self.collectionView.refreshControl?.endRefreshing()
+        if !self.refreshButton.isEnabled {
+          self.refreshButton.isEnabled = true
         }
       } catch {
         fatalError(error.localizedDescription)

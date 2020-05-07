@@ -13,6 +13,8 @@ static let apiKey = "INSERT APIKEY HERE"
 ```
 5. Your are good to go!
 
-target iOS 13.2
-Xcode 11.4.1
+
+## Supports
+iOS 13.2,
+Xcode 11.4.1,
 swift 5.2.2
